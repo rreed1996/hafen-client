@@ -54,7 +54,7 @@ public class GLEnvironment implements Environment {
     final int[] stats_obj = new int[MemStats.values().length];
     final long[] stats_mem = new long[MemStats.values().length];
 
-    public GLEnvironment(GL2 initgl, GLContext ctx, Area wnd) {
+    public GLEnvironment(GL2GL3 initgl, GLContext ctx, Area wnd) {
 	this.ctx = ctx;
 	this.wnd = wnd;
 	initialize(initgl);
@@ -62,7 +62,7 @@ public class GLEnvironment implements Environment {
 	this.nilfbo_db = ctx.getDefaultReadBuffer();
     }
 
-    private void initialize(GL2 gl) {
+    private void initialize(GL2GL3 gl) {
 	gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE);
 	gl.glEnable(GL2.GL_POINT_SPRITE);
     }
@@ -85,7 +85,7 @@ public class GLEnvironment implements Environment {
 	return(wnd);
     }
 
-    private void checkqueries(GL2 gl) {
+    private void checkqueries(GL2GL3 gl) {
 	for(Iterator<GLQuery> i = queries.iterator(); i.hasNext();) {
 	    GLQuery query = i.next();
 	    if(!query.check(gl))
@@ -95,7 +95,7 @@ public class GLEnvironment implements Environment {
 	}
     }
 
-    public void process(GL2 gl) {
+    public void process(GL2GL3 gl) {
 	GLRender prep;
 	Collection<GLRender> copy;
 	synchronized(submitted) {
