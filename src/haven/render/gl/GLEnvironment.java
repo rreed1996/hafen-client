@@ -64,7 +64,6 @@ public class GLEnvironment implements Environment {
 
     private void initialize(GL2GL3 gl) {
 	gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE);
-	gl.glEnable(GL2.GL_POINT_SPRITE);
     }
 
     public GLRender render() {
