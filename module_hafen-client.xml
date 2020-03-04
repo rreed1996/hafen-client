@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_hafen-client" default="compile.module.hafen-client">
+  <dirname property="module.hafen-client.basedir" file="${ant.file.module_hafen-client}"/>
+  
+  <property name="module.jdk.home.hafen-client" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.hafen-client" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.hafen-client" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.hafen-client" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
+  
+  <property name="hafen-client.output.dir" value="${module.hafen-client.basedir}/out/production/hafen-client"/>
+  <property name="hafen-client.testoutput.dir" value="${module.hafen-client.basedir}/out/test/hafen-client"/>
+  
+  <path id="hafen-client.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="hafen-client.module.production.classpath">
+    <path refid="${module.jdk.classpath.hafen-client}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="hafen-client.runtime.production.module.classpath">
+    <pathelement location="${hafen-client.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="hafen-client.module.classpath">
+    <path refid="${module.jdk.classpath.hafen-client}"/>
+    <pathelement location="${hafen-client.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  <path id="hafen-client.runtime.module.classpath">
+    <pathelement location="${hafen-client.testoutput.dir}"/>
+    <pathelement location="${hafen-client.output.dir}"/>
+    <path refid="library.lib.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.hafen-client">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.hafen-client">
+    <patternset refid="excluded.from.module.hafen-client"/>
+  </patternset>
+  
+  <path id="hafen-client.module.sourcepath">
+    <dirset dir="${module.hafen-client.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.hafen-client" depends="compile.module.hafen-client.production,compile.module.hafen-client.tests" description="Compile module hafen-client"/>
+  
+  <target name="compile.module.hafen-client.production" depends="register.custom.compilers" description="Compile module hafen-client; production classes">
+    <mkdir dir="${hafen-client.output.dir}"/>
+    <javac2 destdir="${hafen-client.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.hafen-client}/javac">
+      <compilerarg line="${compiler.args.hafen-client}"/>
+      <bootclasspath refid="hafen-client.module.bootclasspath"/>
+      <classpath refid="hafen-client.module.production.classpath"/>
+      <src refid="hafen-client.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.hafen-client"/>
+    </javac2>
+    
+    <copy todir="${hafen-client.output.dir}">
+      <fileset dir="${module.hafen-client.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.hafen-client.tests" depends="register.custom.compilers,compile.module.hafen-client.production" description="compile module hafen-client; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.hafen-client" description="cleanup module">
+    <delete dir="${hafen-client.output.dir}"/>
+    <delete dir="${hafen-client.testoutput.dir}"/>
+  </target>
+</project>
