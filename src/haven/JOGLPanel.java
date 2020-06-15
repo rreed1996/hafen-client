@@ -216,8 +216,8 @@ public class JOGLPanel extends GLCanvas implements Runnable, UIPanel, Console.Di
 
     private static class ProfileCycle implements BGL.Request {
 	final CPUProfile prof;
-	final ProfileCycle prev;
 	final String label;
+	ProfileCycle prev;
 	CPUProfile.Frame frame;
 
 	ProfileCycle(CPUProfile prof, ProfileCycle prev, String label) {
@@ -231,6 +231,7 @@ public class JOGLPanel extends GLCanvas implements Runnable, UIPanel, Console.Di
 		if(label != null)
 		    prev.frame.tick(label);
 		prev.frame.fin();
+		prev = null;
 	    }
 	    frame = prof.new Frame();
 	}
@@ -367,13 +368,17 @@ public class JOGLPanel extends GLCanvas implements Runnable, UIPanel, Console.Di
 	lastcursor = curs;
     }
 
+    private long prevfree = 0, framealloc = 0;
     @SuppressWarnings("deprecation")
     private void drawstats(UI ui, GOut g, GLRender buf) {
 	int y = g.sz().y - 190;
 	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "FPS: %d (%d%%, %d%% idle, latency %d)", fps, (int)(uidle * 100.0), (int)(ridle * 100.0), framelag);
 	Runtime rt = Runtime.getRuntime();
 	long free = rt.freeMemory(), total = rt.totalMemory();
-	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "Mem: %,011d/%,011d/%,011d/%,011d", free, total - free, total, rt.maxMemory());
+	if(free < prevfree)
+	    framealloc = ((prevfree - free) + (framealloc * 19)) / 20;
+	prevfree = free;
+	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "Mem: %,011d/%,011d/%,011d/%,011d (%,d)", free, total - free, total, rt.maxMemory(), framealloc);
 	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "State slots: %d", State.Slot.numslots());
 	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "GL progs: %d", buf.env.numprogs());
 	FastText.aprintf(g, new Coord(10, y -= 15), 0, 1, "V-Mem: %s", buf.env.memstats());
@@ -424,8 +429,8 @@ public class JOGLPanel extends GLCanvas implements Runnable, UIPanel, Console.Di
 		    double fwaited = 0;
 		    GLEnvironment env = this.env;
 		    GLRender buf = env.render();
-		    Debug.cycle();
 		    UI ui = this.ui;
+		    Debug.cycle(ui.modflags());
 		    GSettings prefs = ui.gprefs;
 		    SyncMode syncmode = prefs.syncmode.val;
 		    CPUProfile.Frame curf = Config.profile ? uprof.new Frame() : null;
